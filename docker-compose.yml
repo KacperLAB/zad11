@@ -1,61 +1,59 @@
 version: '3.8'
 
-# Services
 services:
 
-  # Nginx Service
+  # Nginx
   nginx:
-    image: nginx:latest
-    ports:
-      - 6660:80
-    volumes:
-      - ./src:/var/www/php
-      - ./nginx/conf.d:/etc/nginx/conf.d
-    depends_on:
+    image: nginx:latest #wybrany obraz
+    ports: #deklaracja portow
+      - 6660:80 
+    volumes: #podpiecie wolumenow
+      - ./src:/var/www/php #wolumen z plikiem index.php
+      - ./nginx/conf.d:/etc/nginx/conf.d #wolumen z plikiem .conf
+    depends_on: #zaleznosci - czekaj na uruchomienie uslugi php
       - php
-    networks:
+    networks: #sieci - frontend i backend
       - frontend
       - backend
 
-
-  # PHP Service
+  # PHP
   php:
-    image: php:8.1-fpm
-    working_dir: /var/www/php
-    volumes:
-      - ./src:/var/www/php
-    depends_on:
+    image: php:8.1-fpm #wybrany obraz
+    working_dir: /var/www/php #katalog roboczy
+    volumes: #podpiecie wolumenow
+      - ./src:/var/www/php #wolumen z plikiem index.php
+    depends_on: #zaleznosci - czekaj na usluge mysql
       - mysql
-    networks:
+    networks: #sieci - tylko backend
       - backend
 
-  # MySQL Service
+  # MySQL
   mysql:
-    image: mysql:latest
-    environment:
-      MYSQL_ROOT_PASSWORD: root
+    image: mysql:latest #wybrany obraz
+    environment: #zmienne srodowiskowe
+      MYSQL_ROOT_PASSWORD: root #haslo root'a
       MYSQL_ROOT_HOST: "%"
-    volumes:
+    volumes: #wolumen - aby baza nie byla kasowana po wylaczeniu kontenera
       - mysqldata:/var/lib/mysql
-    networks:
+    networks: #sieci - tylko backend
       - backend
   
-  # PhpMyAdmin Service
+  # PhpMyAdmin
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    ports:
+    image: phpmyadmin/phpmyadmin #wybrany obraz
+    ports: #deklaracja portow
       - 6001:80
-    environment:
-      PMA_HOST: mysql
-    depends_on:
+    environment: #zmienne srodowiskowe
+      PMA_HOST: mysql #nazwa serwera - usluga mysql
+    depends_on: #zaleznosci - czekaj na mysql
       - mysql
-    networks:
+    networks: #sieci - tylko backend
       - backend
         
-
-# Volumes
+# Wolumeny
 volumes:
   mysqldata:
+# Sieci
 networks:
   frontend:
   backend:
